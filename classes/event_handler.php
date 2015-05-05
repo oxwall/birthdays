@@ -88,7 +88,7 @@ class BIRTHDAYS_CLASS_EventHandler
             $userEmbed = '<a href="' . $usersData[$userId]['url'] . '">' . $usersData[$userId]['title'] . '</a>';
             $actionParams['userId'] = $userId;
             $actionParams['entityId'] = $userId;
-            $actionData['line'] = OW::getLanguage()->text('birthdays', 'feed_item_line', array('user' => $userEmbed));
+            $actionData['line'] = array('key' => "birthdays+feed_item_line", 'vars' => array('user' => $userEmbed)); 
             $actionData['content'] = '<div class="ow_user_list_picture">' .OW::getThemeManager()->processDecorator('avatar_item', $usersData[$userId]) . '</div>';
             $actionData['view'] = array( 'iconClass' => 'ow_ic_birthday' );
             
