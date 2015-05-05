@@ -143,9 +143,7 @@ class BIRTHDAYS_CLASS_EventHandler
             $content['content'] .= $html;
             $content['content'] = '<div class="clearfix">'.$content['content'].'</div>';
             $content['view'] = array( 'iconClass' => 'ow_ic_birthday');
-            
-            printVar($content);
-            
+                        
             $event->setData($content);
         }
     }
