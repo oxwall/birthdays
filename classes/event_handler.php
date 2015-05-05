@@ -90,7 +90,7 @@ class BIRTHDAYS_CLASS_EventHandler
             $actionParams['entityId'] = $userId;
             $actionData['line'] = OW::getLanguage()->text('birthdays', 'feed_item_line', array('user' => $userEmbed));
             $actionData['content'] = '<div class="ow_user_list_picture">' .OW::getThemeManager()->processDecorator('avatar_item', $usersData[$userId]) . '</div>';
-            $actionData['view'] = array( 'iconClass' => 'ow_ic_birthday');
+            $actionData['view'] = array( 'iconClass' => 'ow_ic_birthday' );
             
             if ( !empty($birthdays[$userId]['birthdate']) )
             {
@@ -99,8 +99,6 @@ class BIRTHDAYS_CLASS_EventHandler
             }
             
             $event = new OW_Event('feed.action', $actionParams, $actionData);
-            printVar($actionParams);
-            printVar($actionData);
 
             OW::getEventManager()->trigger($event);
 
@@ -142,7 +140,7 @@ class BIRTHDAYS_CLASS_EventHandler
             
             $content['content'] .= $html;
             $content['content'] = '<div class="clearfix">'.$content['content'].'</div>';
-            $content['view'] = array( 'iconClass' => 'ow_ic_birthday');
+            $content['view'] = array( 'iconClass' => 'ow_ic_birthday' );
                         
             $event->setData($content);
         }
