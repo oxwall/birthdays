@@ -351,6 +351,43 @@ class BIRTHDAYS_CLASS_EventHandler
             'selected' => true
         ));
     }
+    
+    public function onAfterAvatarUpdate( OW_Event $e )
+    {       
+        $params = $e->getParams();
+        $userIds = array($params['userId']);
+        $usersData = BOL_AvatarService::getInstance()->getDataForUserAvatars($userIds);
+
+        $actionParams = array(
+            'entityType' => 'birthday',
+            'pluginKey' => 'birthdays'
+        );
+        $actionData = array();
+        
+        $birthdays = BOL_QuestionService::getInstance()->getQuestionData($userIds, array('birthdate'));
+            
+        foreach ( $userIds as $userId )
+        {
+            $userEmbed = '<a href="' . $usersData[$userId]['url'] . '">' . $usersData[$userId]['title'] . '</a>';
+            $actionParams['userId'] = $userId;
+            $actionParams['entityId'] = $userId;
+            $actionData['line'] = array('key' => "birthdays+feed_item_line", 'vars' => array('user' => $userEmbed)); 
+            $actionData['content'] = '<div class="ow_user_list_picture">' .OW::getThemeManager()->processDecorator('avatar_item', $usersData[$userId]) . '</div>';
+            $actionData['view'] = array( 'iconClass' => 'ow_ic_birthday' );
+            
+            if ( !empty($birthdays[$userId]['birthdate']) )
+            {
+                $actionData['birthdate'] = $birthdays[$userId]['birthdate'];
+                $actionData['userData'] = $usersData[$userId];
+            }
+            
+            $event = new OW_Event('feed.action', $actionParams, $actionData);
+
+            OW::getEventManager()->trigger($event);
+
+            BOL_AuthorizationService::getInstance()->trackActionForUser($userId, 'birthdays', 'birthday');
+        }
+    }
 
     public function genericInit()
     {
@@ -363,6 +400,7 @@ class BIRTHDAYS_CLASS_EventHandler
         OW::getEventManager()->bind('feed.after_comment_add', array($this, 'feedComment'));
         OW::getEventManager()->bind('feed.after_like_added', array($this, 'feedLike'));
         OW::getEventManager()->bind('notifications.collect_actions', array($this, 'notificationActions'));
+        OW::getEventManager()->bind('base.after_avatar_update', array($this, 'onAfterAvatarUpdate'));
 
         $credits = new BIRTHDAYS_CLASS_Credits();
         OW::getEventManager()->bind('usercredits.on_action_collect', array($credits, 'bindCreditActionsCollect'));
