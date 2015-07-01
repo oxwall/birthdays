@@ -355,38 +355,20 @@ class BIRTHDAYS_CLASS_EventHandler
     public function onAfterAvatarUpdate( OW_Event $e )
     {       
         $params = $e->getParams();
-        $userIds = array($params['userId']);
-        $usersData = BOL_AvatarService::getInstance()->getDataForUserAvatars($userIds);
+        $userId = $params['userId'];
+        $usersData = BOL_AvatarService::getInstance()->getDataForUserAvatars(array($params['userId']));
 
         $actionParams = array(
             'entityType' => 'birthday',
-            'pluginKey' => 'birthdays'
+            'entityId' => $userId
         );
-        $actionData = array();
         
-        $birthdays = BOL_QuestionService::getInstance()->getQuestionData($userIds, array('birthdate'));
+        $actionData = array();        
+        $actionData['content'] = '<div class="ow_user_list_picture">' .OW::getThemeManager()->processDecorator('avatar_item', $usersData[$userId]) . '</div>';
             
-        foreach ( $userIds as $userId )
-        {
-            $userEmbed = '<a href="' . $usersData[$userId]['url'] . '">' . $usersData[$userId]['title'] . '</a>';
-            $actionParams['userId'] = $userId;
-            $actionParams['entityId'] = $userId;
-            $actionData['line'] = array('key' => "birthdays+feed_item_line", 'vars' => array('user' => $userEmbed)); 
-            $actionData['content'] = '<div class="ow_user_list_picture">' .OW::getThemeManager()->processDecorator('avatar_item', $usersData[$userId]) . '</div>';
-            $actionData['view'] = array( 'iconClass' => 'ow_ic_birthday' );
-            
-            if ( !empty($birthdays[$userId]['birthdate']) )
-            {
-                $actionData['birthdate'] = $birthdays[$userId]['birthdate'];
-                $actionData['userData'] = $usersData[$userId];
-            }
-            
-            $event = new OW_Event('feed.action', $actionParams, $actionData);
+        $event = new OW_Event('feed.action', $actionParams, $actionData);
 
-            OW::getEventManager()->trigger($event);
-
-            BOL_AuthorizationService::getInstance()->trackActionForUser($userId, 'birthdays', 'birthday');
-        }
+        OW::getEventManager()->trigger($event);
     }
 
     public function genericInit()
